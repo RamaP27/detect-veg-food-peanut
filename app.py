@@ -8,7 +8,7 @@ from werkzeug.utils import secure_filename
 import json
 
 app = Flask(__name__)
-app.secret_key = 'your-secret-key-change-in-production'
+app.secret_key = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
@@ -25,8 +25,8 @@ VEGETARIAN_FOODS = {
                'pineapple', 'kiwi', 'peach', 'pear', 'plum', 'cherry', 'blueberry'],
     'grains': ['rice', 'bread', 'pasta', 'noodles', 'oats', 'quinoa', 'barley', 'wheat'],
     'dairy': ['cheese', 'milk', 'yogurt', 'butter', 'cream', 'paneer'],
-    'legumes': ['lentils', 'chickpeas', 'tofu', 'tempeh', 'beans', 'peanuts'],
-    'nuts': ['almond', 'walnut', 'cashew', 'pistachio', 'hazelnut', 'pecan'],
+    'legumes': ['lentils', 'chickpeas', 'tofu', 'tempeh', 'beans'],
+    'nuts': ['almond', 'walnut', 'cashew', 'pistachio', 'hazelnut', 'pecan', 'peanuts'],
     'others': ['egg', 'salad', 'soup', 'pizza', 'burger', 'sandwich']
 }
 
