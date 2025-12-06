@@ -24,4 +24,7 @@ def detect():
     return jsonify(result)
 
 if __name__ == '__main__':
+    # Note: debug=True is for development only. 
+    # For production deployment, use a WSGI server like gunicorn:
+    # gunicorn -w 4 -b 0.0.0.0:5000 app:app
     app.run(debug=True, host='0.0.0.0', port=5000)
