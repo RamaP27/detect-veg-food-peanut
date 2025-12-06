@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vegetarian Food & Peanut Detector</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            text-align: center;
+            font-size: 28px;
+        }
+        
+        .subtitle {
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            resize: vertical;
+            min-height: 100px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .result.show {
+            display: block;
+        }
+        
+        .result-item {
+            margin-bottom: 15px;
+            padding: 12px;
+            border-radius: 6px;
+            background: #f8f9fa;
+        }
+        
+        .result-item strong {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        
+        .vegetarian {
+            color: #28a745;
+            font-weight: 600;
+        }
+        
+        .non-vegetarian {
+            color: #dc3545;
+            font-weight: 600;
+        }
+        
+        .peanut-free {
+            color: #28a745;
+            font-weight: 600;
+        }
+        
+        .contains-peanuts {
+            color: #ffc107;
+            font-weight: 600;
+        }
+        
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 12px;
+            margin-top: 10px;
+            border-radius: 4px;
+            color: #856404;
+        }
+        
+        .allergen-warning {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            color: #721c24;
+        }
+        
+        .loading {
+            text-align: center;
+            color: #667eea;
+            display: none;
+        }
+        
+        .loading.show {
+            display: block;
+        }
+        
+        .example {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🥗 Food Detector</h1>
+        <p class="subtitle">Check if food is vegetarian and detect peanut allergens</p>
+        
+        <form id="detectionForm">
+            <div class="input-group">
+                <label for="foodInput">Enter food description or ingredients:</label>
+                <textarea 
+                    id="foodInput" 
+                    name="food" 
+                    placeholder="Example: Grilled chicken salad with peanut dressing"
+                    required
+                ></textarea>
+                <p class="example">Try: "Vegetable curry", "Chicken burger with peanut sauce", "Tofu salad"</p>
+            </div>
+            
+            <button type="submit">Analyze Food</button>
+        </form>
+        
+        <div class="loading" id="loading">
+            <p>Analyzing...</p>
+        </div>
+        
+        <div class="result" id="result">
+            <div class="result-item">
+                <strong>Food Item:</strong>
+                <span id="foodName"></span>
+            </div>
+            
+            <div class="result-item">
+                <strong>Vegetarian Status:</strong>
+                <span id="vegStatus"></span>
+            </div>
+            
+            <div class="result-item">
+                <strong>Peanut Detection:</strong>
+                <span id="peanutStatus"></span>
+            </div>
+            
+            <div id="warnings"></div>
+        </div>
+    </div>
+    
+    <script>
+        document.getElementById('detectionForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const foodInput = document.getElementById('foodInput').value;
+            const loading = document.getElementById('loading');
+            const result = document.getElementById('result');
+            
+            // Show loading
+            loading.classList.add('show');
+            result.classList.remove('show');
+            
+            try {
+                const response = await fetch('/detect', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ food: foodInput })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Update food name
+                    document.getElementById('foodName').textContent = data.food;
+                    
+                    // Update vegetarian status
+                    const vegStatus = document.getElementById('vegStatus');
+                    vegStatus.textContent = data.vegetarian_status;
+                    vegStatus.className = data.is_vegetarian ? 'vegetarian' : 'non-vegetarian';
+                    
+                    // Update peanut status
+                    const peanutStatus = document.getElementById('peanutStatus');
+                    peanutStatus.textContent = data.peanut_status;
+                    peanutStatus.className = data.contains_peanuts ? 'contains-peanuts' : 'peanut-free';
+                    
+                    // Update warnings
+                    const warningsDiv = document.getElementById('warnings');
+                    warningsDiv.innerHTML = '';
+                    
+                    if (data.warnings && data.warnings.length > 0) {
+                        data.warnings.forEach(warning => {
+                            const warningDiv = document.createElement('div');
+                            warningDiv.className = 'warning';
+                            if (warning.includes('ALLERGEN')) {
+                                warningDiv.className += ' allergen-warning';
+                            }
+                            warningDiv.textContent = warning;
+                            warningsDiv.appendChild(warningDiv);
+                        });
+                    }
+                    
+                    // Show result
+                    result.classList.add('show');
+                } else {
+                    alert(data.error || 'An error occurred');
+                }
+            } catch (error) {
+                alert('Failed to analyze food. Please try again.');
+                console.error(error);
+            } finally {
+                loading.classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>
