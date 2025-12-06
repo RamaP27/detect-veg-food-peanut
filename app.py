@@ -26,6 +26,8 @@ VEGETARIAN_FOODS = {
     'grains': ['rice', 'bread', 'pasta', 'noodles', 'oats', 'quinoa', 'barley', 'wheat'],
     'dairy': ['cheese', 'milk', 'yogurt', 'butter', 'cream', 'paneer'],
     'legumes': ['lentils', 'chickpeas', 'tofu', 'tempeh', 'beans'],
+    # Note: Peanuts are included in nuts because they are vegetarian
+    # Allergen detection is handled separately in PEANUT_FOODS
     'nuts': ['almond', 'walnut', 'cashew', 'pistachio', 'hazelnut', 'pecan', 'peanuts'],
     'others': ['egg', 'salad', 'soup', 'pizza', 'burger', 'sandwich']
 }
@@ -37,7 +39,8 @@ NON_VEGETARIAN_FOODS = [
     'sausage', 'ham', 'meat', 'steak'
 ]
 
-# Peanut-containing foods
+# Peanut-containing foods (for allergen detection)
+# Note: Peanuts are vegetarian but are tracked separately for allergen warnings
 PEANUT_FOODS = ['peanut', 'peanut butter', 'groundnut', 'peanut oil', 'peanut sauce']
 
 
@@ -118,6 +121,11 @@ def api_detect():
         return jsonify({'error': 'Missing food_name parameter'}), 400
     
     food_name = data['food_name']
+    
+    # Validate food_name is a non-empty string
+    if not isinstance(food_name, str) or not food_name.strip():
+        return jsonify({'error': 'food_name must be a non-empty string'}), 400
+    
     result = detect_food_type(food_name)
     
     return jsonify(result)
