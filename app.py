@@ -10,7 +10,11 @@ def index():
 
 @app.route('/detect', methods=['POST'])
 def detect():
-    data = request.get_json()
+    data = request.get_json(silent=True)
+    
+    if data is None:
+        return jsonify({'error': 'Invalid JSON data'}), 400
+    
     food_description = data.get('food', '')
     
     if not food_description:

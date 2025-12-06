@@ -270,10 +270,33 @@
                     // Show result
                     result.classList.add('show');
                 } else {
-                    alert(data.error || 'An error occurred');
+                    // Display error message safely
+                    const errorMsg = document.createElement('div');
+                    errorMsg.style.cssText = 'background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 12px; margin-top: 20px; border-radius: 8px;';
+                    errorMsg.textContent = data.error || 'An error occurred';
+                    
+                    const existingError = document.querySelector('.error-message');
+                    if (existingError) {
+                        existingError.remove();
+                    }
+                    
+                    errorMsg.className = 'error-message';
+                    document.querySelector('.container').appendChild(errorMsg);
                 }
             } catch (error) {
-                alert('Failed to analyze food. Please try again.');
+                // Create error message safely without XSS risk
+                const errorMsg = document.createElement('div');
+                errorMsg.style.cssText = 'background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 12px; margin-top: 20px; border-radius: 8px;';
+                errorMsg.textContent = 'Failed to analyze food. Please try again.';
+                
+                // Clear any existing error messages
+                const existingError = document.querySelector('.error-message');
+                if (existingError) {
+                    existingError.remove();
+                }
+                
+                errorMsg.className = 'error-message';
+                document.querySelector('.container').appendChild(errorMsg);
                 console.error(error);
             } finally {
                 loading.classList.remove('show');

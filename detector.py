@@ -1,27 +1,25 @@
+import re
+
+
 class FoodDetector:
     """Detects if food is vegetarian and if it contains peanuts."""
     
+    # Non-vegetarian ingredients - class-level constants
+    NON_VEG_KEYWORDS = [
+        'meat', 'beef', 'pork', 'chicken', 'fish', 'salmon', 'tuna',
+        'turkey', 'lamb', 'mutton', 'bacon', 'ham', 'sausage', 'shrimp',
+        'prawn', 'crab', 'lobster', 'duck', 'goose', 'venison', 'seafood',
+        'anchovy', 'anchovies', 'gelatin', 'gelatine'
+    ]
+    
+    # Peanut-related keywords
+    PEANUT_KEYWORDS = [
+        'peanut', 'peanuts', 'groundnut', 'groundnuts', 'monkey nut',
+        'monkey nuts', 'goober', 'goobers', 'peanut butter', 'peanut oil'
+    ]
+    
     def __init__(self):
-        # Non-vegetarian ingredients
-        self.non_veg_keywords = [
-            'meat', 'beef', 'pork', 'chicken', 'fish', 'salmon', 'tuna',
-            'turkey', 'lamb', 'mutton', 'bacon', 'ham', 'sausage', 'shrimp',
-            'prawn', 'crab', 'lobster', 'duck', 'goose', 'venison', 'seafood',
-            'anchovy', 'anchovies', 'gelatin', 'gelatine'
-        ]
-        
-        # Peanut-related keywords
-        self.peanut_keywords = [
-            'peanut', 'peanuts', 'groundnut', 'groundnuts', 'monkey nut',
-            'monkey nuts', 'goober', 'goobers', 'peanut butter', 'peanut oil'
-        ]
-        
-        # Vegetarian indicators
-        self.veg_keywords = [
-            'vegetable', 'vegetables', 'vegan', 'vegetarian', 'plant-based',
-            'salad', 'fruit', 'fruits', 'tofu', 'beans', 'lentils', 'rice',
-            'pasta', 'bread', 'cheese', 'paneer', 'dal', 'quinoa'
-        ]
+        pass
     
     def analyze_food(self, food_description):
         """
@@ -35,11 +33,17 @@ class FoodDetector:
         """
         food_lower = food_description.lower()
         
-        # Check for non-vegetarian ingredients
-        contains_non_veg = any(keyword in food_lower for keyword in self.non_veg_keywords)
+        # Check for non-vegetarian ingredients using word boundaries
+        contains_non_veg = any(
+            re.search(r'\b' + re.escape(keyword) + r'\b', food_lower)
+            for keyword in self.NON_VEG_KEYWORDS
+        )
         
-        # Check for peanuts
-        contains_peanuts = any(keyword in food_lower for keyword in self.peanut_keywords)
+        # Check for peanuts using word boundaries
+        contains_peanuts = any(
+            re.search(r'\b' + re.escape(keyword.replace(' ', r'\s+')) + r'\b', food_lower)
+            for keyword in self.PEANUT_KEYWORDS
+        )
         
         # Determine if vegetarian
         is_vegetarian = not contains_non_veg
