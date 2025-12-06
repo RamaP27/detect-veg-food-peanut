@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Image - Vegetarian Food Detector{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>Upload Food Image</h1>
+        <p>Upload an image of your food for analysis (Feature in development)</p>
+    </div>
+
+    {% if not uploaded %}
+    <div class="upload-form">
+        <form method="POST" enctype="multipart/form-data" action="{{ url_for('upload') }}">
+            <div class="file-upload-area">
+                <div class="file-upload-icon">📸</div>
+                <h3>Choose an image to upload</h3>
+                <p>Supported formats: PNG, JPG, JPEG, GIF, WEBP (Max 16MB)</p>
+                <input 
+                    type="file" 
+                    id="file" 
+                    name="file" 
+                    class="file-input" 
+                    accept="image/*" 
+                    required
+                >
+                <label for="file" class="btn btn-primary">Select Image</label>
+            </div>
+            <button type="submit" class="btn btn-success">Upload and Analyze</button>
+        </form>
+    </div>
+    {% else %}
+    <div class="upload-success">
+        <div class="success-icon">✅</div>
+        <h2>Upload Successful!</h2>
+        <p>Your image has been uploaded: <strong>{{ filename }}</strong></p>
+        <p class="note">Image recognition feature is coming soon. Currently, please use the text-based detection.</p>
+        <div class="action-buttons">
+            <a href="{{ url_for('detect') }}" class="btn btn-primary">Try Text Detection</a>
+            <a href="{{ url_for('upload') }}" class="btn btn-secondary">Upload Another</a>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="info-section">
+        <h3>🔮 Coming Soon</h3>
+        <ul class="info-list">
+            <li>🤖 AI-powered image recognition</li>
+            <li>📊 Nutritional information analysis</li>
+            <li>🔍 Multi-food detection in one image</li>
+            <li>💾 Save and track your food history</li>
+        </ul>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const fileInput = document.getElementById('file');
+        const fileLabel = fileInput ? fileInput.nextElementSibling : null;
+        
+        if (fileInput && fileLabel) {
+            fileInput.addEventListener('change', function(e) {
+                const fileName = e.target.files[0] ? e.target.files[0].name : 'Select Image';
+                fileLabel.textContent = fileName;
+            });
+        }
+    });
+</script>
+{% endblock %}

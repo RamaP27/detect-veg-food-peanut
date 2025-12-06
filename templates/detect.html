@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Detect Food - Vegetarian Food Detector{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>Detect Vegetarian Food</h1>
+        <p>Enter the name of a food item to check if it's vegetarian and contains peanuts</p>
+    </div>
+
+    <div class="detection-form">
+        <form method="POST" action="{{ url_for('detect') }}">
+            <div class="form-group">
+                <label for="food_name">Food Name</label>
+                <input 
+                    type="text" 
+                    id="food_name" 
+                    name="food_name" 
+                    class="form-control" 
+                    placeholder="e.g., Pizza, Chicken Curry, Tofu Salad"
+                    required
+                    autofocus
+                >
+            </div>
+            <button type="submit" class="btn btn-primary">Detect Food Type</button>
+        </form>
+    </div>
+
+    <div class="info-section">
+        <h3>📋 What We Check</h3>
+        <ul class="info-list">
+            <li>✅ Whether the food is vegetarian</li>
+            <li>🥜 If the food contains peanuts (allergen warning)</li>
+            <li>🏷️ Food category classification</li>
+            <li>✓ Safety information for vegetarians</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

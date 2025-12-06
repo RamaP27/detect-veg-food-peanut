@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}Detection Result - Vegetarian Food Detector{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="result-container">
+        <h1>Detection Result</h1>
+        
+        <div class="result-card">
+            <div class="result-header">
+                <h2>{{ result.food_name }}</h2>
+            </div>
+            
+            <div class="result-body">
+                <div class="result-item {% if result.is_vegetarian %}success{% else %}danger{% endif %}">
+                    <div class="result-icon">
+                        {% if result.is_vegetarian %}
+                            ✅
+                        {% else %}
+                            ❌
+                        {% endif %}
+                    </div>
+                    <div class="result-info">
+                        <h3>Vegetarian Status</h3>
+                        <p>
+                            {% if result.is_vegetarian %}
+                                This food is <strong>VEGETARIAN</strong>
+                            {% else %}
+                                This food is <strong>NOT VEGETARIAN</strong>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+
+                <div class="result-item {% if result.contains_peanut %}warning{% else %}success{% endif %}">
+                    <div class="result-icon">
+                        {% if result.contains_peanut %}
+                            ⚠️
+                        {% else %}
+                            ✅
+                        {% endif %}
+                    </div>
+                    <div class="result-info">
+                        <h3>Peanut Content</h3>
+                        <p>
+                            {% if result.contains_peanut %}
+                                <strong>WARNING:</strong> Contains peanuts (allergen)
+                            {% else %}
+                                Does not contain peanuts
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+
+                {% if result.category %}
+                <div class="result-item info">
+                    <div class="result-icon">🏷️</div>
+                    <div class="result-info">
+                        <h3>Category</h3>
+                        <p>{{ result.category|title }}</p>
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="result-summary {% if result.safe_for_veg %}success{% else %}danger{% endif %}">
+                    {% if result.safe_for_veg %}
+                        <h3>✓ Safe for Vegetarians</h3>
+                        <p>This food is suitable for a vegetarian diet.</p>
+                    {% else %}
+                        <h3>✗ Not Suitable for Vegetarians</h3>
+                        <p>This food contains non-vegetarian ingredients.</p>
+                    {% endif %}
+                    
+                    {% if result.allergen_warning %}
+                        <p class="allergen-note"><strong>Allergen Alert:</strong> Contains peanuts</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="result-actions">
+            <a href="{{ url_for('detect') }}" class="btn btn-primary">Check Another Food</a>
+            <a href="{{ url_for('index') }}" class="btn btn-secondary">Back to Home</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
